@@ -1,12 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+
+
+class WeatherApp extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            weather: "",
+        };
+    }
+
+    locationSubmit(location) {
+        const weather = "api.openweathermap.org/data/2.5/forecast?id=524901&APPID=43e3cf2994ee866c7c768f22aed0d170";
+    }
+
+    render() {
+        return (
+            <div className="container">
+                <h1>Weather App</h1>
+            </div>
+        );
+    }
+}
+
+
+
+ReactDOM.render(
+    <WeatherApp />,       // name of component !!!!!!!!!!!!!!!!!!!!!!!!!!
+    document.getElementById('root')
+);
