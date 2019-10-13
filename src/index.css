@@ -1,0 +1,12 @@
+.weatherAppTitle {
+    display: inline-block;
+}
+
+.clockContainer {
+    float: right;
+}
+
+img[src=''] 
+{
+  display: none;
+}

@@ -7,7 +7,7 @@ class LocationForm extends React.Component {
       <form onSubmit={this.props.locationSubmit}>
         <input
           type="text"
-          placeholder="location"
+          placeholder="city"
           name="location"
         ></input>
         <button>Search</button>
