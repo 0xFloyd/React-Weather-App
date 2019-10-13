@@ -27,8 +27,22 @@ class App extends React.Component {
  
 
   locationSubmit = async (e) => {
-    let location = e.target.elements.location.value;
     e.preventDefault();
+    let timeNow = (new Date()).toLocaleTimeString('en-GB');
+    let endOfDay = moment().endOf('day').format('HH:mm:ss');
+    let end = moment.utc(timeNow, "HH:mm");
+    let start = moment.utc(endOfDay, "HH:mm");
+    let d = moment.duration(end.diff(start));
+    console.log(moment.utc(+d).format('H:mm'));
+
+    if (end.isBefore(start)) {
+      end.add(1, 'day')
+      console.log("entered loop")
+    };
+
+    //console.log(timeNow, endOfDay);
+    //console.log(moment.duration(endOfDay.diff(timeNow, 'hours')));
+    let location = e.target.elements.location.value;
     try {
       const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&cnt=7&units=imperial&APPID=${apiKey}`,{ mode: "cors" }); //,{ mode: "cors" }
         const response = await openWeatherAPI.json();
@@ -57,10 +71,12 @@ class App extends React.Component {
       let responseForecastList = forecastResponse.list;
       //console.log(responseForecastList.length);
 
-      
+      //  how many hours in day left divide, % by three, then add 4 for next day. 
+
+      /*
       for (let i = 0; i < responseForecastList.length; i++) {
         console.log((moment.unix(responseForecastList[i].dt).format('H:mm:ss')));
-      }
+      }*/
       //let firstForecast = moment.unix(forecastResponse.list[0].dt).format('H:mm:ss');
       //console.log(firstForecast);
       //console.log(moment().endOf('day').format('H:mm:ss'));
