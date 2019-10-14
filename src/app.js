@@ -34,8 +34,8 @@ class App extends React.Component {
     let end = moment.utc(timeNow, "HH:mm");
     //let start = moment.utc(endOfDay, "HH:mm");
     //console.log(moment.utc(+d).format('H:mm'));
-
     let location = e.target.elements.location.value;
+
     try {
       const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&cnt=7&units=imperial&APPID=${apiKey}`,{ mode: "cors" }); //,{ mode: "cors" }
         const response = await openWeatherAPI.json();
@@ -49,6 +49,7 @@ class App extends React.Component {
           weatherConditions: temperature + ", " + response.weather[0].main,
             icon: iconURL
         });
+
     }   catch (error) {
         this.setState({
           location: "",
@@ -75,21 +76,11 @@ class App extends React.Component {
           day5 = { date: moment.unix(responseForecastList[i + 36].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 36].main["temp"]) + "°F" };
           break;
         };
-         //console.log(holding);
-        //console.log((moment.unix(responseForecastList[i].dt).format('H:mm:ss')));
         };
-        //console.log((moment.unix(responseForecastList[i].dt).format('H:mm:ss')));
-      //let firstForecast = moment.unix(forecastResponse.list[0].dt).format('H:mm:ss');
-      //console.log(firstForecast);
-      //console.log(moment().endOf('day').format('H:mm:ss'));
-      
-      //let endOfToday = moment().endOf('day').format('h:mm:ss A');
-      //let timeUntilEndOfDay = moment.subtract(firstForecast, endOfToday);
-      //console.log(timeUntilEndOfDay);
+        
       this.setState({
         days: [day1, day2, day3, day4, day5]
       });
-      
       
     } catch (error) {
       this.setState({
@@ -149,7 +140,6 @@ class App extends React.Component {
             <p>{this.state.days[4]['temp']}</p>
           </Col>
         </Row>
-
       </div>
     );
   }
