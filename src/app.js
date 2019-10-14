@@ -1,5 +1,5 @@
 import React from "react";
-//import { Button } from "reactstrap"; //  Reactstrap
+import { Row, Col } from "reactstrap"; //  Reactstrap
 import LocationForm from "./form";
 import Clock from "./clock";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,7 +18,8 @@ class App extends React.Component {
     this.state = {
       location: "Search a city to find the current weather!",
       weatherConditions: "",
-      icon: thermometer
+      icon: thermometer,
+      days: [{ date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }]
     };
 
     //this.locationSubmit = this.locationSubmit.bind(this);
@@ -29,19 +30,11 @@ class App extends React.Component {
   locationSubmit = async (e) => {
     e.preventDefault();
     let timeNow = (new Date()).toLocaleTimeString('en-GB');
-    let endOfDay = moment().endOf('day').format('HH:mm:ss');
+    //let endOfDay = moment().endOf('day').format('HH:mm:ss');
     let end = moment.utc(timeNow, "HH:mm");
-    let start = moment.utc(endOfDay, "HH:mm");
-    let d = moment.duration(end.diff(start));
-    console.log(moment.utc(+d).format('H:mm'));
+    //let start = moment.utc(endOfDay, "HH:mm");
+    //console.log(moment.utc(+d).format('H:mm'));
 
-    if (end.isBefore(start)) {
-      end.add(1, 'day')
-      console.log("entered loop")
-    };
-
-    //console.log(timeNow, endOfDay);
-    //console.log(moment.duration(endOfDay.diff(timeNow, 'hours')));
     let location = e.target.elements.location.value;
     try {
       const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&cnt=7&units=imperial&APPID=${apiKey}`,{ mode: "cors" }); //,{ mode: "cors" }
@@ -65,18 +58,27 @@ class App extends React.Component {
     }
 
     try { 
+      let temporary, day1, day2, day3, day4, day5;
       const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&units=imperial&APPID=${apiKey}`, { mode: "cors" });
       const forecastResponse = await openWeather5Day.json();
-      //console.log(forecastResponse); 
+      console.log(forecastResponse); 
       let responseForecastList = forecastResponse.list;
-      //console.log(responseForecastList.length);
 
-      //  how many hours in day left divide, % by three, then add 4 for next day. 
-
-      /*
       for (let i = 0; i < responseForecastList.length; i++) {
-        console.log((moment.unix(responseForecastList[i].dt).format('H:mm:ss')));
-      }*/
+        temporary = moment.unix(responseForecastList[i].dt).format('H:mm:ss');
+        temporary = moment.utc(temporary, "HH:mm");
+        if (temporary.isBefore(end)) {
+          day1 = { date: moment.unix(responseForecastList[i + 4].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 4].main["temp"]) + "°F"};
+          day2 = { date: moment.unix(responseForecastList[i + 12].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 12].main["temp"]) + "°F" };
+          day3 = { date: moment.unix(responseForecastList[i + 20].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 20].main["temp"]) + "°F" };
+          day4 = { date: moment.unix(responseForecastList[i + 28].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 28].main["temp"]) + "°F" };
+          day5 = { date: moment.unix(responseForecastList[i + 36].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 36].main["temp"]) + "°F" };
+          break;
+        };
+         //console.log(holding);
+        //console.log((moment.unix(responseForecastList[i].dt).format('H:mm:ss')));
+        };
+        //console.log((moment.unix(responseForecastList[i].dt).format('H:mm:ss')));
       //let firstForecast = moment.unix(forecastResponse.list[0].dt).format('H:mm:ss');
       //console.log(firstForecast);
       //console.log(moment().endOf('day').format('H:mm:ss'));
@@ -84,6 +86,9 @@ class App extends React.Component {
       //let endOfToday = moment().endOf('day').format('h:mm:ss A');
       //let timeUntilEndOfDay = moment.subtract(firstForecast, endOfToday);
       //console.log(timeUntilEndOfDay);
+      this.setState({
+        days: [day1, day2, day3, day4, day5]
+      });
       
       
     } catch (error) {
@@ -104,6 +109,47 @@ class App extends React.Component {
         <p id="locationStatus">{this.state.location}</p>
         <p>{this.state.weatherConditions}</p>
         <img id="weatherIcon" src={this.state.icon} alt="Weather icon"></img>
+        <Row>
+          <Col>
+            <p>{this.state.days[0]['date']}</p>
+          </Col>
+          <Col>
+            <p>{this.state.days[0]['temp']}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <p>{this.state.days[1]['date']}</p>
+          </Col>
+          <Col>
+            <p>{this.state.days[1]['temp']}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <p>{this.state.days[2]['date']}</p>
+          </Col>
+          <Col>
+            <p>{this.state.days[2]['temp']}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <p>{this.state.days[3]['date']}</p>
+          </Col>
+          <Col>
+            <p>{this.state.days[3]['temp']}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <p>{this.state.days[4]['date']}</p>
+          </Col>
+          <Col>
+            <p>{this.state.days[4]['temp']}</p>
+          </Col>
+        </Row>
+
       </div>
     );
   }
