@@ -31,6 +31,7 @@ class App extends React.Component {
     //this.locationSubmit = this.locationSubmit.bind(this);
   }
 
+  // use callback? 10/14/19
   getLocation = async() => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(this.getCoordinates, this.userLocationError);
@@ -39,7 +40,11 @@ class App extends React.Component {
       }
 
       try {
-        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=43,-71&key=${googleMapsAPIKey}`, { mode: "cors" }); //,{ mode: "cors" }
+        let currentLatitude = this.state.latitude;
+        let currentLongitude = this.state.longitude;
+        let both = currentLatitude + "," + currentLongitude;
+        console.log(both);
+        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${both}&key=${googleMapsAPIKey}`, { mode: "cors" }); //,{ mode: "cors" }
         const response = await googleMApsAPI.json();
         console.log(response);
 
@@ -49,6 +54,7 @@ class App extends React.Component {
   }
 
   getCoordinates(position) {
+    
     this.setState({
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
