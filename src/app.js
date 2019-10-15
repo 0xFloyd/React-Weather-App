@@ -31,7 +31,7 @@ class App extends React.Component {
     //this.locationSubmit = this.locationSubmit.bind(this);
   }
 
-  // use callback? 10/14/19
+  // use callback? 10/14/19l
   getLocation = async() => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(this.getCoordinates, this.userLocationError);
