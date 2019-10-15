@@ -10,3 +10,13 @@ img[src='']
 {
   display: none;
 }
+
+.locationIcon {
+   display: flex;
+  align-items: center;
+}
+
+.useMyLocationText {
+  padding: 5px;
+   vertical-align: middle;
+}

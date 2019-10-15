@@ -6,11 +6,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import thermometer from "./img/thermom.png";
 import moment from 'moment';
-
+import { FaMapMarkerAlt } from 'react-icons/fa'; 
+import { async } from "q";
 //  TODO  add geolocation   npmjs.com/package/react-geolocated
 
 
 const apiKey = "43e3cf2994ee866c7c768f22aed0d170";
+const googleMapsAPIKey = "AIzaSyDzAFPTp0UbVyxwwuOeJwZmnaHSUo9mK_A";
 
 class App extends React.Component {
   constructor(props) {
@@ -19,13 +21,44 @@ class App extends React.Component {
       location: "Search a city to find the current weather!",
       weatherConditions: "",
       icon: thermometer,
-      days: [{ date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }]
+      days: [{ date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }],
+      latitude: null,
+      longitude: null
     };
 
+    this.getLocation = this.getLocation.bind(this);
+    this.getCoordinates = this.getCoordinates.bind(this);
     //this.locationSubmit = this.locationSubmit.bind(this);
   }
 
- 
+  getLocation = async() => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(this.getCoordinates, this.userLocationError);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+
+      try {
+        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=43,-71&key=${googleMapsAPIKey}`, { mode: "cors" }); //,{ mode: "cors" }
+        const response = await googleMApsAPI.json();
+        console.log(response);
+
+      } catch (error) {
+        alert("error in try/catch googleapi");
+      }
+  }
+
+  getCoordinates(position) {
+    this.setState({
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude
+    });
+    
+  }
+
+  userLocationError(error) {
+    alert(error);
+  }
 
   locationSubmit = async (e) => {
     e.preventDefault();
@@ -62,7 +95,7 @@ class App extends React.Component {
       let temporary, day1, day2, day3, day4, day5;
       const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&units=imperial&APPID=${apiKey}`, { mode: "cors" });
       const forecastResponse = await openWeather5Day.json();
-      console.log(forecastResponse); 
+      //console.log(forecastResponse); 
       let responseForecastList = forecastResponse.list;
 
       for (let i = 0; i < responseForecastList.length; i++) {
@@ -96,7 +129,16 @@ class App extends React.Component {
       <div className="container">
         <Clock />
         <h1 className="weatherAppTitle">Weather App</h1>
-        <LocationForm locationSubmit={this.locationSubmit}></LocationForm>
+        <Row>
+          <Col xs={12}>
+            <LocationForm locationSubmit={this.locationSubmit}></LocationForm>
+          </Col>
+          <Col>
+            <div className="locationIcon">
+              <FaMapMarkerAlt size={20} onClick={this.getLocation} /><span onClick={this.getLocation}>my location</span>
+            </div>
+          </Col>
+        </Row>
         <p id="locationStatus">{this.state.location}</p>
         <p>{this.state.weatherConditions}</p>
         <img id="weatherIcon" src={this.state.icon} alt="Weather icon"></img>
