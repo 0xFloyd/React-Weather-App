@@ -10,7 +10,7 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 //  TODO  add geolocation   npmjs.com/package/react-geolocated
 
 
-
+const apiKey = "43e3cf2994ee866c7c768f22aed0d170";
 
 class App extends React.Component {
   constructor(props) {
@@ -37,13 +37,68 @@ class App extends React.Component {
         let currentLongitude = this.state.longitude;
         let both = currentLatitude + "," + currentLongitude;
         console.log(both);
-        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${both}&key={key}`, { mode: "cors" }); //,{ mode: "cors" }
+        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${both}&key=AIzaSyDg77OFnr12I4sTIkJSZF2iAIPTjCPkbbM`, { mode: "cors" }); //,{ mode: "cors" }
         const response = await googleMApsAPI.json();
         console.log(response);
 
       } catch (error) {
         alert("error in try/catch googleapi");
       }
+
+      try {
+        const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${this.state.latitude}&lon=${this.state.longitude}&units=imperial&APPID=${apiKey}`, { mode: "cors" }); //,{ mode: "cors" }
+        const response = await openWeatherAPI.json();
+        console.log(response);
+        let icon = response.weather[0].icon;
+        let iconURL = "http://openweathermap.org/img/w/" + icon + ".png";
+        let temperature = Math.round(response.main["temp"]) + "°F";
+        let location = response.name + ", " + response.sys["country"];
+        this.setState({
+          location: location,
+          weatherConditions: temperature + ", " + response.weather[0].main,
+          icon: iconURL
+        });
+
+      } catch (error) {
+        alert("error in try/catch openweather after googleapi");
+      }
+
+
+    try {
+      let temporary, day1, day2, day3, day4, day5;
+      let timeNow = (new Date()).toLocaleTimeString('en-GB');
+      let end = moment.utc(timeNow, "HH:mm");
+      const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${this.state.latitude}&lon=${this.state.longitude}&units=imperial&APPID=${apiKey}`, { mode: "cors" });
+      const forecastResponse = await openWeather5Day.json();
+      //console.log(forecastResponse); 
+      
+      let responseForecastList = forecastResponse.list;
+
+      for (let i = 0; i < responseForecastList.length; i++) {
+        temporary = moment.unix(responseForecastList[i].dt).format('H:mm:ss');
+        temporary = moment.utc(temporary, "HH:mm");
+        if (temporary.isBefore(end)) {
+          day1 = { date: moment.unix(responseForecastList[i + 4].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 4].main["temp"]) + "°F" };
+          day2 = { date: moment.unix(responseForecastList[i + 12].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 12].main["temp"]) + "°F" };
+          day3 = { date: moment.unix(responseForecastList[i + 20].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 20].main["temp"]) + "°F" };
+          day4 = { date: moment.unix(responseForecastList[i + 28].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 28].main["temp"]) + "°F" };
+          day5 = { date: moment.unix(responseForecastList[i + 36].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 36].main["temp"]) + "°F" };
+          break;
+        };
+      };
+
+      this.setState({
+        days: [day1, day2, day3, day4, day5]
+      });
+
+    } catch (error) {
+      this.setState({
+        location: "",
+        weatherConditions: "We can't find that city. Please try again. Error: " + error,
+        icon: ""
+      });
+    }
+      
 
       //this.locationSubmit();
   }
@@ -79,7 +134,7 @@ class App extends React.Component {
     let location = e.target.elements.location.value;
 
     try {
-      const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&cnt=7&units=imperial&APPID={apiKey}`,{ mode: "cors" }); //,{ mode: "cors" }
+      const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&cnt=7&units=imperial&APPID=${apiKey}`,{ mode: "cors" }); //,{ mode: "cors" }
         const response = await openWeatherAPI.json();
         console.log(response);
         let icon = response.weather[0].icon;
@@ -103,7 +158,7 @@ class App extends React.Component {
 
     try { 
       let temporary, day1, day2, day3, day4, day5;
-      const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&units=imperial&APPID={apiKey}`, { mode: "cors" });
+      const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&units=imperial&APPID=${apiKey}`, { mode: "cors" });
       const forecastResponse = await openWeather5Day.json();
       //console.log(forecastResponse); 
       let responseForecastList = forecastResponse.list;
