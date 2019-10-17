@@ -7,12 +7,10 @@ import "./index.css";
 import thermometer from "./img/thermom.png";
 import moment from 'moment';
 import { FaMapMarkerAlt } from 'react-icons/fa'; 
-import { async } from "q";
 //  TODO  add geolocation   npmjs.com/package/react-geolocated
 
 
-const apiKey = "43e3cf2994ee866c7c768f22aed0d170";
-const googleMapsAPIKey = "AIzaSyDzAFPTp0UbVyxwwuOeJwZmnaHSUo9mK_A";
+
 
 class App extends React.Component {
   constructor(props) {
@@ -23,7 +21,8 @@ class App extends React.Component {
       icon: thermometer,
       days: [{ date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }],
       latitude: null,
-      longitude: null
+      longitude: null,
+      geoLocation: null
     };
 
     this.getLocation = this.getLocation.bind(this);
@@ -33,33 +32,37 @@ class App extends React.Component {
 
   // use callback? 10/14/19l
   getLocation = async() => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(this.getCoordinates, this.userLocationError);
-      } else {
-        alert("Geolocation is not supported by this browser.");
-      }
-
       try {
         let currentLatitude = this.state.latitude;
         let currentLongitude = this.state.longitude;
         let both = currentLatitude + "," + currentLongitude;
         console.log(both);
-        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${both}&key=${googleMapsAPIKey}`, { mode: "cors" }); //,{ mode: "cors" }
+        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${both}&key={key}`, { mode: "cors" }); //,{ mode: "cors" }
         const response = await googleMApsAPI.json();
         console.log(response);
 
       } catch (error) {
         alert("error in try/catch googleapi");
       }
+
+      //this.locationSubmit();
   }
 
-  getCoordinates(position) {
-    
+  activateGeolocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.getCoordinates, this.userLocationError);
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }
+
+  getCoordinates(position) { 
     this.setState({
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
     });
     
+    this.getLocation();
   }
 
   userLocationError(error) {
@@ -76,8 +79,9 @@ class App extends React.Component {
     let location = e.target.elements.location.value;
 
     try {
-      const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&cnt=7&units=imperial&APPID=${apiKey}`,{ mode: "cors" }); //,{ mode: "cors" }
+      const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&cnt=7&units=imperial&APPID={apiKey}`,{ mode: "cors" }); //,{ mode: "cors" }
         const response = await openWeatherAPI.json();
+        console.log(response);
         let icon = response.weather[0].icon;
         let iconURL = "http://openweathermap.org/img/w/" + icon + ".png";
         let temperature = Math.round(response.main["temp"]) + "°F";
@@ -99,7 +103,7 @@ class App extends React.Component {
 
     try { 
       let temporary, day1, day2, day3, day4, day5;
-      const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&units=imperial&APPID=${apiKey}`, { mode: "cors" });
+      const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&units=imperial&APPID={apiKey}`, { mode: "cors" });
       const forecastResponse = await openWeather5Day.json();
       //console.log(forecastResponse); 
       let responseForecastList = forecastResponse.list;
@@ -141,7 +145,7 @@ class App extends React.Component {
           </Col>
           <Col>
             <div className="locationIcon">
-              <FaMapMarkerAlt size={20} onClick={this.getLocation} /><span onClick={this.getLocation}>my location</span>
+              <FaMapMarkerAlt size={20} onClick={this.activateGeolocation} /><span onClick={this.activateGeolocation}>my location</span>
             </div>
           </Col>
         </Row>
