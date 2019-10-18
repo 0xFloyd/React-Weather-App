@@ -10,7 +10,6 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 //  TODO  add geolocation   npmjs.com/package/react-geolocated
 
 
-const apiKey = "43e3cf2994ee866c7c768f22aed0d170";
 
 class App extends React.Component {
   constructor(props) {
@@ -18,8 +17,8 @@ class App extends React.Component {
     this.state = {
       location: "Search a city to find the current weather!",
       weatherConditions: "",
-      icon: thermometer,
-      days: [{ date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }, { date: "", temp: "" }],
+      icon: '',
+      days: [{ date: "", icon: "", temp: "" }, { date: "", icon: "", temp: "" }, { date: "", icon: "", temp: "" }, { date: "", icon: "", temp: "" }, { date: "", icon: "", temp: "" }],
       latitude: null,
       longitude: null,
       geoLocation: null
@@ -36,10 +35,10 @@ class App extends React.Component {
         let currentLatitude = this.state.latitude;
         let currentLongitude = this.state.longitude;
         let both = currentLatitude + "," + currentLongitude;
-        console.log(both);
-        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${both}&key=AIzaSyDg77OFnr12I4sTIkJSZF2iAIPTjCPkbbM`, { mode: "cors" }); //,{ mode: "cors" }
+        //console.log(both);
+        const googleMApsAPI = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${both}&key=${googleAPI}`, { mode: "cors" }); //,{ mode: "cors" }
         const response = await googleMApsAPI.json();
-        console.log(response);
+        //console.log(response);
 
       } catch (error) {
         alert("error in try/catch googleapi");
@@ -48,7 +47,7 @@ class App extends React.Component {
       try {
         const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${this.state.latitude}&lon=${this.state.longitude}&units=imperial&APPID=${apiKey}`, { mode: "cors" }); //,{ mode: "cors" }
         const response = await openWeatherAPI.json();
-        console.log(response);
+        //console.log(response);
         let icon = response.weather[0].icon;
         let iconURL = "http://openweathermap.org/img/w/" + icon + ".png";
         let temperature = Math.round(response.main["temp"]) + "°F";
@@ -65,12 +64,12 @@ class App extends React.Component {
 
 
     try {
-      let temporary, day1, day2, day3, day4, day5;
+      let temporary, day1, day2, day3, day4, day5, icon1, icon2, icon3, icon4, icon5;
       let timeNow = (new Date()).toLocaleTimeString('en-GB');
       let end = moment.utc(timeNow, "HH:mm");
       const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${this.state.latitude}&lon=${this.state.longitude}&units=imperial&APPID=${apiKey}`, { mode: "cors" });
       const forecastResponse = await openWeather5Day.json();
-      //console.log(forecastResponse); 
+      console.log(forecastResponse); 
       
       let responseForecastList = forecastResponse.list;
 
@@ -78,11 +77,17 @@ class App extends React.Component {
         temporary = moment.unix(responseForecastList[i].dt).format('H:mm:ss');
         temporary = moment.utc(temporary, "HH:mm");
         if (temporary.isBefore(end)) {
-          day1 = { date: moment.unix(responseForecastList[i + 4].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 4].main["temp"]) + "°F" };
-          day2 = { date: moment.unix(responseForecastList[i + 12].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 12].main["temp"]) + "°F" };
-          day3 = { date: moment.unix(responseForecastList[i + 20].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 20].main["temp"]) + "°F" };
-          day4 = { date: moment.unix(responseForecastList[i + 28].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 28].main["temp"]) + "°F" };
-          day5 = { date: moment.unix(responseForecastList[i + 36].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 36].main["temp"]) + "°F" };
+          icon1 = responseForecastList[i + 4].weather[0].icon;
+          icon2 = responseForecastList[i + 12].weather[0].icon;
+          icon3 = responseForecastList[i + 20].weather[0].icon;
+          icon4 = responseForecastList[i + 28].weather[0].icon;
+          icon5 = responseForecastList[i + 36].weather[0].icon;
+          // eslint-disable-next-line no-lone-blocks 
+          day1 = { date: moment.unix(responseForecastList[i + 4].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon1 + ".png", temp: Math.round(responseForecastList[i + 4].main["temp"]) + "°F" };
+          day2 = { date: moment.unix(responseForecastList[i + 12].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon2 + ".png", temp: Math.round(responseForecastList[i + 12].main["temp"]) + "°F" };
+          day3 = { date: moment.unix(responseForecastList[i + 20].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon3 + ".png", temp: Math.round(responseForecastList[i + 20].main["temp"]) + "°F" };
+          day4 = { date: moment.unix(responseForecastList[i + 28].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon4 + ".png", temp: Math.round(responseForecastList[i + 28].main["temp"]) + "°F" };
+          day5 = { date: moment.unix(responseForecastList[i + 36].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon5 + ".png", temp: Math.round(responseForecastList[i + 36].main["temp"]) + "°F" };
           break;
         };
       };
@@ -136,7 +141,7 @@ class App extends React.Component {
     try {
       const openWeatherAPI = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&cnt=7&units=imperial&APPID=${apiKey}`,{ mode: "cors" }); //,{ mode: "cors" }
         const response = await openWeatherAPI.json();
-        console.log(response);
+        //console.log(response);
         let icon = response.weather[0].icon;
         let iconURL = "http://openweathermap.org/img/w/" + icon + ".png";
         let temperature = Math.round(response.main["temp"]) + "°F";
@@ -157,7 +162,7 @@ class App extends React.Component {
     }
 
     try { 
-      let temporary, day1, day2, day3, day4, day5;
+      let temporary, day1, day2, day3, day4, day5, icon1, icon2, icon3, icon4, icon5;
       const openWeather5Day = await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&units=imperial&APPID=${apiKey}`, { mode: "cors" });
       const forecastResponse = await openWeather5Day.json();
       //console.log(forecastResponse); 
@@ -166,14 +171,21 @@ class App extends React.Component {
       for (let i = 0; i < responseForecastList.length; i++) {
         temporary = moment.unix(responseForecastList[i].dt).format('H:mm:ss');
         temporary = moment.utc(temporary, "HH:mm");
+        console.log(responseForecastList[i + 4]);
         if (temporary.isBefore(end)) {
-          day1 = { date: moment.unix(responseForecastList[i + 4].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 4].main["temp"]) + "°F"};
-          day2 = { date: moment.unix(responseForecastList[i + 12].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 12].main["temp"]) + "°F" };
-          day3 = { date: moment.unix(responseForecastList[i + 20].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 20].main["temp"]) + "°F" };
-          day4 = { date: moment.unix(responseForecastList[i + 28].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 28].main["temp"]) + "°F" };
-          day5 = { date: moment.unix(responseForecastList[i + 36].dt).format('dddd, M/D'), temp: Math.round(responseForecastList[i + 36].main["temp"]) + "°F" };
-          break;
-        };
+            icon1 = responseForecastList[i + 4].weather[0].icon;
+            icon2 = responseForecastList[i + 12].weather[0].icon;
+            icon3 = responseForecastList[i + 20].weather[0].icon;
+            icon4 = responseForecastList[i + 28].weather[0].icon;
+            icon5 = responseForecastList[i + 36].weather[0].icon;
+            // eslint-disable-next-line no-lone-blocks 
+          day1 = { date: moment.unix(responseForecastList[i + 4].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon1 + ".png", temp: Math.round(responseForecastList[i + 4].main["temp"]) + "°F"};
+          day2 = { date: moment.unix(responseForecastList[i + 12].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon2 + ".png", temp: Math.round(responseForecastList[i + 12].main["temp"]) + "°F" };
+          day3 = { date: moment.unix(responseForecastList[i + 20].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon3 + ".png", temp: Math.round(responseForecastList[i + 20].main["temp"]) + "°F" };
+          day4 = { date: moment.unix(responseForecastList[i + 28].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon4 + ".png", temp: Math.round(responseForecastList[i + 28].main["temp"]) + "°F" };
+          day5 = { date: moment.unix(responseForecastList[i + 36].dt).format('dddd, M/D'), icon: "http://openweathermap.org/img/w/" + icon5 + ".png", temp: Math.round(responseForecastList[i + 36].main["temp"]) + "°F" };
+              break;
+            };
         };
         
       this.setState({
@@ -191,62 +203,93 @@ class App extends React.Component {
   
   render() {
     return (
-      <div className="container">
-        <Clock />
-        <h1 className="weatherAppTitle">Weather App</h1>
+      <div>
         <Row>
-          <Col xs={12}>
-            <LocationForm locationSubmit={this.locationSubmit}></LocationForm>
-          </Col>
           <Col>
-            <div className="locationIcon">
-              <FaMapMarkerAlt size={20} onClick={this.activateGeolocation} /><span onClick={this.activateGeolocation}>my location</span>
-            </div>
           </Col>
         </Row>
-        <p id="locationStatus">{this.state.location}</p>
-        <p>{this.state.weatherConditions}</p>
-        <img id="weatherIcon" src={this.state.icon} alt="Weather icon"></img>
-        <Row>
-          <Col>
+        <Row className="justify-content-center align-items-center">
+          <h1 className="weatherAppTitle text-center">Weather App</h1>
+        </Row>
+        <div className="searchCard text-center justify-content-center align-items-center">
+          <Row className="text-center justify-content-center align-items-center">
+            <Col xs={12}>
+              <LocationForm locationSubmit={this.locationSubmit}></LocationForm>
+            </Col>
+            <Col>
+              <div className="justify-content-center locationIcon">
+                <FaMapMarkerAlt size={20} onClick={this.activateGeolocation} /><span onClick={this.activateGeolocation}>use my location</span>
+              </div>
+            </Col>
+          </Row>
+        </div>
+        <div className="currentLocationCard text-center justify-content-center align-items-center">
+          <Row className="text-center justify-content-center align-items-center">
+            <p id="locationStatus">{this.state.location}</p>
+          </Row>
+          <Row className="text-center justify-content-center align-items-center">
+            <p>{this.state.weatherConditions}</p>
+            <img id="weatherIcon" src={this.state.icon} alt="Weather icon"></img>
+          </Row>
+        </div>
+        <Row className="weatherRow text-center justify-content-center align-items-center">
+          <Col xs={6} className="dateCol">
             <p>{this.state.days[0]['date']}</p>
+          </Col>
+          <Col>
+            <img id="weatherIcon" src={this.state.days[0]['icon']} alt="Weather icon"></img>
           </Col>
           <Col>
             <p>{this.state.days[0]['temp']}</p>
           </Col>
         </Row>
-        <Row>
-          <Col>
+        <Row className="weatherRow text-center justify-content-center align-items-center">
+          <Col xs={6} className="dateCol">
             <p>{this.state.days[1]['date']}</p>
+          </Col>
+          <Col>
+            <img id="weatherIcon" src={this.state.days[1]['icon']} alt="Weather icon"></img>
           </Col>
           <Col>
             <p>{this.state.days[1]['temp']}</p>
           </Col>
         </Row>
-        <Row>
-          <Col>
+        <Row className="weatherRow text-center justify-content-center align-items-center">
+          <Col xs={6} className="dateCol">
             <p>{this.state.days[2]['date']}</p>
+          </Col>
+          <Col>
+            <img id="weatherIcon" src={this.state.days[2]['icon']} alt="Weather icon"></img>
           </Col>
           <Col>
             <p>{this.state.days[2]['temp']}</p>
           </Col>
         </Row>
-        <Row>
-          <Col>
+        <Row className="weatherRow text-center justify-content-center align-items-center">
+          <Col xs={6} className="dateCol">
             <p>{this.state.days[3]['date']}</p>
+          </Col>
+          <Col>
+            <img id="weatherIcon" src={this.state.days[3]['icon']} alt="Weather icon"></img>
           </Col>
           <Col>
             <p>{this.state.days[3]['temp']}</p>
           </Col>
         </Row>
-        <Row>
-          <Col>
+        <Row className="weatherRow text-center justify-content-center align-items-center">
+          <Col xs={6} className="dateCol">
             <p>{this.state.days[4]['date']}</p>
+          </Col>
+          <Col>
+            <img id="weatherIcon" src={this.state.days[4]['icon']} alt="Weather icon"></img>
           </Col>
           <Col>
             <p>{this.state.days[4]['temp']}</p>
           </Col>
         </Row>
+        <div className="footer"> 
+          <Clock />
+        </div>
       </div>
     );
   }

@@ -1,9 +1,17 @@
-.weatherAppTitle {
-    display: inline-block;
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+body {
+  margin: 0px;
+  padding: 0px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
-.clockContainer {
-    float: right;
+h1 {
+  font-family: 'Roboto', sans-serif;
+}
+.weatherAppTitle {
+    display: inline-block;
 }
 
 img[src=''] 
@@ -12,6 +20,7 @@ img[src='']
 }
 
 .locationIcon {
+
    display: flex;
   align-items: center;
 }
@@ -19,4 +28,69 @@ img[src='']
 .useMyLocationText {
   padding: 5px;
    vertical-align: middle;
+}
+
+.footer {
+  position: fixed;
+  bottom: 30px !important;
+  width: 100%;
+  background-color: rgb(196, 196, 196);
+  color: white;
+  text-align: center;
+  padding: 0px;
+  left: 0px;
+  right: 0px;
+  vertical-align: middle;
+  
+}
+
+.weatherRow {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
+  vertical-align: middle;
+  
+}
+
+p {
+  padding: 0px !important;
+  margin: 0px !important;
+  vertical-align: middle;
+}
+
+.dateCol {
+  text-align: left;
+}
+
+.currentLocationCard {
+  padding: 10px 10px 10px 10px;;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 50%;
+  margin: 10px auto 5px auto;
+  border-radius: 10px;
+}
+
+
+.currentLocationCard:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.searchCard {
+  padding: 20px;
+}
+
+input {
+   border: 1px solid #DADCE0;
+            padding: 10px;
+            border-radius: 4px;
+            
+}
+
+button {
+   padding: 3px 15px 3px 15px;
+   background-color: white;
+   border: 1px solid rgb(128, 128, 128);
+  border-radius: 4px !important;
 }
